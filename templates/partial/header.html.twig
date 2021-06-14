@@ -1,0 +1,13 @@
+{% block header %}
+
+<header>
+    <nav>
+        <ul>
+            <li><a href="{{ path('default_redirect_to_home') }}">Página de inicio</a></li>
+            <li><a href="{{ path('default_index') }}">Empleados HTML</a></li>
+            <li><a href="{{ path('default_index_json', {_format: 'json' }) }}">Empleados JSON</a></li>            
+        </ul>
+    </nav>
+</header>
+
+{% endblock %}
