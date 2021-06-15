@@ -92,6 +92,28 @@ class DefaultController extends AbstractController
         ]);
     }
 
+
+    // EJERCICIO
+    // Crear el recurso para obtener una representación de
+    // "UN" empleado en formato JSON.
+
+        /**
+     * @Route(
+     *     "/default/{id}",
+     *     name="default_show_json",
+     *     requirements = {
+     *     "id": "[0-3]",
+     *          "_format": "json"
+     *     }
+     * )
+     */
+
+    public function showJson(int $id): JsonResponse {
+        $person = self::PEOPLE[$id];
+        return new JsonResponse($person);
+    }
+    
+
     /**
      * @Route("/redirect-to-home", name="default_redirect_to_home")
      */
@@ -107,7 +129,4 @@ class DefaultController extends AbstractController
         return new RedirectResponse('/', Response:: HTTP_TEMPORARY_REDIRECT);        
     }
 
-    // EJERCICIO
-    // Crear el recurso para obtener una representación de
-    // "UN" empleado en formato JSON.
 }

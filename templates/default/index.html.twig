@@ -23,7 +23,7 @@
                 <td>
                     <ul>
                        <li><a href="{{ path('default_show', { id: loop.index0 }) }}">Ver en formato HTML</a></li>
-                       <li><a href="#">Ver en formato JSON</a></li>
+                       <li><a href="{{ path('default_show_json', { id: loop.index0, _format: 'json' }) }}">Ver en formato JSON</a></li>
                     </ul>
                 </td>
             </tr>
