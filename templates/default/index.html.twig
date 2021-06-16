@@ -5,11 +5,16 @@
 {% endblock %}
 
 {% block body %}
+    <form method="GET">
+        <input type="text" name="term"/>
+        <input type="submit" value="Buscar"/>      
+    </form>
+    <hr/>
     <table>
         <thead>
             <tr>
                 <th>Nombre</th>
-                <th>Email</th>
+                <th>Email <a href="{{ path('default_index', { orderBy: 'email', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'email', orderDir: 'ASC'}) }}">⬇</a></th>
                 <th>Localidad</th>   
                 <th>Acciones</th>             
             </tr>
@@ -22,8 +27,8 @@
                 <td>{{ person.city }}</td>
                 <td>
                     <ul>
-                       <li><a href="{{ path('default_show', { id: loop.index0 }) }}">Ver en formato HTML</a></li>
-                       <li><a href="{{ path('default_show_json', { id: loop.index0, _format: 'json' }) }}">Ver en formato JSON</a></li>
+                       <li><a href="{{ path('default_show', { id: person.id }) }}">Ver en formato HTML</a></li>
+                       <li><a href="{{ path('default_index_json', { _format: 'json', id: person.id }) }}">Ver en formato JSON</a></li>
                     </ul>
                 </td>
             </tr>

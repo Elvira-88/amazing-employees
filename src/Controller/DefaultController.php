@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Entity\Employee;
+use App\Repository\EmployeeRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -15,12 +17,12 @@ use Symfony\Component\Routing\Annotation\Route;
 // a disposición nuestra multitud de características
 class DefaultController extends AbstractController
 {
-    const PEOPLE = [
-        ['name' => 'Carlos', 'email' => 'carlos@correo.com', 'age' => 30, 'city' => 'Benalmádena'],
-        ['name' => 'Carmen', 'email' => 'carmen@correo.com', 'age' => 25, 'city' => 'Fuengirola'],
-        ['name' => 'Carmelo', 'email' => 'carmelo@correo.com', 'age' => 35, 'city' => 'Torremolinos'],
-        ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'],        
-    ];
+    // const PEOPLE = [
+    //     ['name' => 'Carlos', 'email' => 'carlos@correo.com', 'age' => 30, 'city' => 'Benalmádena'],
+    //     ['name' => 'Carmen', 'email' => 'carmen@correo.com', 'age' => 25, 'city' => 'Fuengirola'],
+    //     ['name' => 'Carmelo', 'email' => 'carmelo@correo.com', 'age' => 35, 'city' => 'Torremolinos'],
+    //     ['name' => 'Carolina', 'email' => 'carolina@correo.com', 'age' => 38, 'city' => 'Málaga'],        
+    // ];
     
     /**
      * @Route("/default", name="default_index")
@@ -30,8 +32,15 @@ class DefaultController extends AbstractController
      * El segundo parámetro de Route es el nombre que queremos dar a la ruta.
      */
 
-    public function index(Request $request): Response
+    public function index(Request $request, EmployeeRepository $employeeRepository): Response
     {
+            if($request->query->has('term')) {
+                $people = $employeeRepository->findByTerm($request->query->get('term'));
+
+                return $this->render('default/index.html.twig', [
+                    'people' => $people
+                ]);
+            }
      
         // Una acción siempre debe devolver una respesta.
         // Por defecto deberá ser un objeto de la clase,
@@ -42,10 +51,20 @@ class DefaultController extends AbstractController
         
         // symfony console es un comando equivalente a php bin/console
 
-        $name = 'Elvi';
+        // Método 1: accediendo al repositorio a través de AbstractController
+        // $people = $this->getDoctrine()->getRepository(Employee::class)->findAll(); // Employee::class = App\Entity\Employee
         
+        $order = [];
+
+        if($request->query->has('orderBy')) {
+            $order[$request->query->get('orderBy')] = $request->query->get('orderDir', 'ASC');
+        }
+
+        // Metodo 2: creando un parámetro indicando el tipo (type hint).
+        $people = $employeeRepository->findBy([], $order); // Employee::class = App\Entity\Employee
+
         return $this->render('default/index.html.twig', [
-            'people' => self::PEOPLE
+            'people' => $people
         ]);
     }
 
@@ -72,8 +91,12 @@ class DefaultController extends AbstractController
      *  y mostrará la información asociada.
      */
 
-    public function indexJson(): JsonResponse {
-        return $this->json(self::PEOPLE);
+    public function indexJson(Request $request, EmployeeRepository $employeeRepository): JsonResponse {
+        $people = $request->query->has('id') ?
+        $employeeRepository->find($request->query->get('id')) :
+        $employeeRepository->findAll();
+        
+        return $this->json($people);
     }
 
     /**
@@ -81,17 +104,21 @@ class DefaultController extends AbstractController
      *     "/default/{id}",
      *     name="default_show",
      *     requirements = {
-     *          "id": "[0-3]"
+     *          "id": "\d+"
      *     }
      * )
      */
-    public function show(int $id): Response {
+    // La técinca ParamConverte inyecta directamente,
+    // un objeto del tipo indicado como parámetro
+    // intentando hacer un match del parámetro de la ruta
+    // con alguna de las propiedades del objeto requerido.
+
+    public function show(Employee $employee): Response {
         return $this->render('default/show.html.twig', [
-            'id' => $id,
-            'person' => self::PEOPLE[$id]
+            'person' => $employee
         ]);
     }
-
+ 
 
     // EJERCICIO
     // Crear el recurso para obtener una representación de
@@ -109,7 +136,7 @@ class DefaultController extends AbstractController
      */
 
     public function showJson(int $id): JsonResponse {
-        $person = self::PEOPLE[$id];
+        $person = [];
         return new JsonResponse($person);
     }
     
