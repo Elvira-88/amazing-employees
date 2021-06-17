@@ -4,9 +4,12 @@ namespace App\Entity;
 
 use App\Repository\EmployeeRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity(repositoryClass=EmployeeRepository::class)
+ * @UniqueEntity("email")
  */
 class Employee
 {
@@ -19,16 +22,27 @@ class Employee
 
     /**
      * @ORM\Column(type="string", length=128)
+     * 
+     * @Assert\NotBlank
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string", length=128)
+     * @ORM\Column(type="string", length=128, unique=true)
+     * 
+     * @Assert\Email(
+     *      message = "El correo {{ value }} no tiene un formato válido."
+     * )
      */
     private $email;
 
     /**
      * @ORM\Column(type="smallint")
+     * 
+     * @Assert\GreaterThanOrEqual(
+     *      value = 18,
+     *      message = "El empelado debe ser mayor de edad."
+     * )
      */
     private $age;
 
@@ -41,6 +55,12 @@ class Employee
      * @ORM\Column(type="string", length=12)
      */
     private $phone;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Department::class, inversedBy="employees")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $department;
 
     public function getId(): ?int
     {
@@ -103,6 +123,18 @@ class Employee
     public function setPhone(string $phone): self
     {
         $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getDepartment(): ?Department
+    {
+        return $this->department;
+    }
+
+    public function setDepartment(?Department $department): self
+    {
+        $this->department = $department;
 
         return $this;
     }
