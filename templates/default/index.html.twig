@@ -10,12 +10,14 @@
         <input type="submit" value="Buscar"/>      
     </form>
     <hr/>
-    <table>
+    <table border="1">
         <thead>
             <tr>
                 <th>Nombre</th>
                 <th>Email <a href="{{ path('default_index', { orderBy: 'email', orderDir: 'DESC'}) }}">⬆</a>&nbsp;<a href="{{ path('default_index', { orderBy: 'email', orderDir: 'ASC'}) }}">⬇</a></th>
                 <th>Localidad</th>   
+                <th>Departamento</th>
+                <th>Proyectos</th>
                 <th>Acciones</th>             
             </tr>
         </thead>
@@ -25,6 +27,9 @@
                 <td>{{ person.name }}</td>
                 <td>{{ person.email }}</a></td>
                 <td>{{ person.city }}</td>
+                {# <td>{{ person.department }}</td> #}
+                <td>{{ person.department.name }}</td>
+                <td>{{ person.projects|join(',') }}</td>
                 <td>
                     <ul>
                        <li><a href="{{ path('default_show', { id: person.id }) }}">Ver en formato HTML</a></li>

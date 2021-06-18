@@ -2,15 +2,15 @@
 
 namespace App\Entity;
 
-use App\Repository\DepartmentRepository;
+use App\Repository\ProjectRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=DepartmentRepository::class)
+ * @ORM\Entity(repositoryClass=ProjectRepository::class)
  */
-class Department
+class Project
 {
     /**
      * @ORM\Id
@@ -25,7 +25,7 @@ class Department
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity=Employee::class, mappedBy="department")
+     * @ORM\ManyToMany(targetEntity=Employee::class, inversedBy="projects")
      */
     private $employees;
 
@@ -63,7 +63,6 @@ class Department
     {
         if (!$this->employees->contains($employee)) {
             $this->employees[] = $employee;
-            $employee->setDepartment($this);
         }
 
         return $this;
@@ -71,18 +70,14 @@ class Department
 
     public function removeEmployee(Employee $employee): self
     {
-        if ($this->employees->removeElement($employee)) {
-            // set the owning side to null (unless already changed)
-            if ($employee->getDepartment() === $this) {
-                $employee->setDepartment(null);
-            }
-        }
+        $this->employees->removeElement($employee);
 
         return $this;
     }
 
-    // public function __toString(): string
-    // {
-    //     return $this->name;
-    // }
+    public function __toString(): string
+    {
+        return $this->name;
+    }
+
 }

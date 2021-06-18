@@ -6,6 +6,7 @@ namespace App\Controller;
 
 use App\Entity\Employee;
 use App\Repository\EmployeeRepository;
+use App\Service\EmployeeNormalize;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -91,12 +92,22 @@ class DefaultController extends AbstractController
      *  y mostrará la información asociada.
      */
 
-    public function indexJson(Request $request, EmployeeRepository $employeeRepository): JsonResponse {
-        $people = $request->query->has('id') ?
+    public function indexJson(Request $request, EmployeeRepository $employeeRepository, EmployeeNormalize $employeeNormalize): JsonResponse {
+        $result = $request->query->has('id') ?
         $employeeRepository->find($request->query->get('id')) :
         $employeeRepository->findAll();
-        
-        return $this->json($people);
+
+        $data = [];
+
+        if ($result instanceof Employee) {
+            return $this->json($employeeNormalize->employeeNormalize($result));
+        }
+
+        foreach($result as $employee) {
+            array_push($data, $employeeNormalize->employeeNormalize($employee));
+        }          
+            
+        return $this->json($data);
     }
 
     /**
@@ -135,7 +146,7 @@ class DefaultController extends AbstractController
      * )
      */
 
-    public function showJson(int $id): JsonResponse {
+    public function showJson(int $id, EmployeeRepository $employeeRepository): JsonResponse {
         $person = [];
         return new JsonResponse($person);
     }
@@ -154,6 +165,29 @@ class DefaultController extends AbstractController
         // Devolver directamente un objeto RedirectResponse
 
         return new RedirectResponse('/', Response:: HTTP_TEMPORARY_REDIRECT);        
+    }
+
+    private function normalizeEmployee(Employee $employee): ?array {
+        $projects = [];
+
+        foreach($employee->getProjects() as $project) {
+            array_push($projects, [
+                'id' => $project->getId(),
+                'name' => $project->getName(),
+            ]);
+        }
+
+        return [
+            'name' => $employee->getName(),
+            'email' => $employee->getEmail(),
+            'city' => $employee->getCity(),
+            'department' => [
+                'id' => $employee->getDepartment()->getId(),
+                'name' => $employee->getDepartment()->getName(),
+            ],    
+            'projects' => $projects            
+        ];
+
     }
 
 }
