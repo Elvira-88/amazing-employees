@@ -25,6 +25,7 @@
             {% for person in people %}
             <tr>
                 <td>{{ person.name }}</td>
+                <td>{% if person.avatar %}<img src="{{ asset('employee/avatar/' ~ person.avatar) }}" width="200"/>{% endif %}</td>
                 <td>{{ person.email }}</a></td>
                 <td>{{ person.city }}</td>
                 {# <td>{{ person.department }}</td> #}

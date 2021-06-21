@@ -5,7 +5,10 @@
         <ul>
             <li><a href="{{ path('default_redirect_to_home') }}">Página de inicio</a></li>
             <li><a href="{{ path('default_index') }}">Empleados HTML</a></li>
-            <li><a href="{{ path('default_index_json', {_format: 'json' }) }}">Empleados JSON</a></li>            
+            <li><a href="{{ path('default_index_json', {_format: 'json' }) }}">Empleados JSON</a></li>
+            {% if app.user %}   
+                <li><a href="{{ path('app_logout') }}">Cerrar sesión</a></li>    
+            {% endif %}     
         </ul>
     </nav>
 </header>

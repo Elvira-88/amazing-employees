@@ -69,6 +69,11 @@ class Employee
      */
     private $projects;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $avatar;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
@@ -174,6 +179,18 @@ class Employee
         if ($this->projects->removeElement($project)) {
             $project->removeEmployee($this);
         }
+
+        return $this;
+    }
+
+    public function getAvatar(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function setAvatar(?string $avatar): self
+    {
+        $this->avatar = $avatar;
 
         return $this;
     }
