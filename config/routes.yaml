@@ -1,9 +1,11 @@
-#index:
+#   index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
 
 redirect_from_homepage_to_default_page:
     path: /
     controller: Symfony\Bundle\FrameworkBundle\Controller\RedirectController
-    defaults:
-        route: 'default_index'
+    defaults: 
+        route: "default_index"
+api_login_check:
+    path: /api/login_check
